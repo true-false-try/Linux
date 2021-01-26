@@ -1,0 +1,91 @@
+1. Установить apache2. Прислать скриншоты работающего сервера.
+# su root
+# apt install apache2 -y
+# ss -ntlp
+LISTEN    0         511                      *:80                     *:*        users:(("apache2",pid=31211,fd=4),
+											("apache2",pid=31210,fd=4),
+											("apache2",pid=31209,fd=4),
+											("apache2",pid=31208,fd=4),
+											("apache2",pid=30010,fd=4),
+											("apache2",pid=29997,fd=4),
+											("apache2",pid=29996,fd=4),
+											("apache2",pid=29995,fd=4),
+											("apache2",pid=29994,fd=4),
+											("apache2",pid=29993,fd=4),
+											("apache2",pid=29992,fd=4))
+
+
+2. Установить mysql. Проверить работу, через консольного клиента, проверить команды"select user from mysql.user;" и "select * from user;"
+# su root
+# apt install mysql-server mysql-client mysql-common
+# sudo service mysql start
+# mysql_secure_installation
+
+# SELECT user FROM mysql.user;
++------------------+
+| user             |
++------------------+
+| debian-sys-maint |
+| mysql.infoschema |
+| mysql.session    |
+| mysql.sys        |
+| root             |
+| user             |
++------------------+
+6 rows in set (0.00 sec)
+
+# SELECT * FROM user;
+ERROR 1046 (3D000): No database selected
+
+
+3. Установить php и phpmyadmin.
+# su root 
+# apt libapache2-mod-php phpmyadmin -y
+
+
+4. * Зайти пользователем root и попробовать там создать новую тестовую БД, пользователя для работы с ней, создать в ней пару таблиц и заполнить их произвольным содержимым. Потом зайти в консольного клиента mysql новым пользователем и вывести содержимое каждой из таблиц в новой базе данных в консоли используя команды.
+# su root
+# mysql -u root -p
+
+# CREATE DATABASE mydb;
+# USE mydb;
+# CREATE USER 'user'@'localhost' IDENTIFIED BY 'our_parol';
+# GRANT ALL PRIVILEGES ON * . * TO 'user'@'localhost';
+# FLUSH PRIVILEGES;
+# EXIT;
+
+# mysql -u user -p  
+
+# USE mydb;
+# CREATE TABLE city (id int not null auto_increment, call_city varchar(100), city_years int, primary key (id));
+# CREATE TABLE name (id int not null auto_increment, user_name varchar(50), age int, primary key (id));
+# INSERT INTO city (call_city,city_years) VALUES ('Kiev',1520)
+# INSERT INTO name (user_name,age) VALUES ('Ivan',28)
+
+
+5. * Установить nginx и настроить его на работу с php-fpm.
+# systemctl stop apache2
+# apt install nginx -y
+# cd sites-enabled/
+# nano default    ---------> Change port 80 on 88 and save.
+# systemctl stop apache2
+
+LISTEN    0         511                0.0.0.0:88               0.0.0.0:*        users:(("nginx",pid=29971,fd=6),
+											("nginx",pid=29970,fd=6),
+											("nginx",pid=29969,fd=6),
+											("nginx",pid=29968,fd=6),
+											("nginx",pid=29967,fd=6),
+											("nginx",pid=29966,fd=6),
+											("nginx",pid=29965,fd=6))
+
+LISTEN    0         511                      *:80                     *:*        users:(("apache2",pid=31211,fd=4),
+                                                                                        ("apache2",pid=31210,fd=4),
+                                                                                        ("apache2",pid=31209,fd=4),
+                                                                                        ("apache2",pid=31208,fd=4),
+                                                                                        ("apache2",pid=30010,fd=4),
+                                                                                        ("apache2",pid=29997,fd=4),
+                                                                                        ("apache2",pid=29996,fd=4),
+                                                                                        ("apache2",pid=29995,fd=4),
+                                                                                        ("apache2",pid=29994,fd=4),
+                                                                                        ("apache2",pid=29993,fd=4),
+                                                                                        ("apache2",pid=29992,fd=4))
